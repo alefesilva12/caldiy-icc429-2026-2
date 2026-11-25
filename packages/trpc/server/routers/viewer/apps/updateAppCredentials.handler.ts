@@ -40,6 +40,7 @@ export const updateAppCredentialsHandler = async ({ ctx, input }: UpdateAppCrede
       id: input.credentialId,
       userId: user.id,
     },
+    select: { id: true, appId: true, key: true },
   });
   // Check if credential exists
   if (!credential) {
@@ -61,6 +62,7 @@ export const updateAppCredentialsHandler = async ({ ctx, input }: UpdateAppCrede
         ...(validatedKeys as Prisma.JsonObject),
       },
     },
+    select: { id: true },
   });
 
   return !!updated;

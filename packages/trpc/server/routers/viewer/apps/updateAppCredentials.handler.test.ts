@@ -5,12 +5,12 @@ import type { UpdateAppCredentialsOptions } from "./updateAppCredentials.handler
 import { updateAppCredentialsHandler } from "./updateAppCredentials.handler";
 
 /**
- * Characterization tests for viewer.apps.updateAppCredentials (#30566).
+ * Tests for viewer.apps.updateAppCredentials (#30566).
  *
- * They pin down what the handler does at commit ae027bb, before any change.
- * Tests named "[current] ..." describe the defect reported in #30566 and are
- * inverted by the commit that fixes it. Every other test describes behavior
- * that must survive the change unchanged.
+ * They started as characterization tests of the behavior at commit ae027bb.
+ * The seven tests that documented the defect were inverted by the fix and
+ * are marked "(#30566)"; every other test describes behavior that survived
+ * the change unchanged.
  */
 
 const { paypalValidator } = vi.hoisted(() => ({ paypalValidator: vi.fn() }));
@@ -74,7 +74,7 @@ const call = (key: Record<string, unknown>) =>
 /** Returns the `key` object the handler asked Prisma to persist. */
 const persistedKey = () => update.mock.calls[0][0].data.key as Record<string, unknown>;
 
-describe("updateAppCredentials — characterization (behavior at ae027bb)", () => {
+describe("updateAppCredentials", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     update.mockResolvedValue({ id: 10 });
@@ -135,50 +135,53 @@ describe("updateAppCredentials — characterization (behavior at ae027bb)", () =
       expect(persistedKey()).toEqual({ legacy: "keep", ...VALID_KEYS[appId] });
     });
 
-    it.each(INVALID_KEYS)("[current] $appId: stores a key its schema rejects ($problem)", async ({
+    it.each(INVALID_KEYS)("$appId: rejects a key its schema rejects ($problem) (#30566)", async ({
       appId,
       key,
     }) => {
       findFirst.mockResolvedValue({ id: 10, appId, key: {} });
 
-      await call({ ...key });
-
-      expect(update).toHaveBeenCalledTimes(1);
+      await expect(call({ ...key })).rejects.toMatchObject({
+        code: "BAD_REQUEST",
+        message: "Invalid credential key",
+      });
+      expect(update).not.toHaveBeenCalled();
     });
 
-    it("[current] stores fields that are not in the app's schema", async () => {
+    it("drops fields that are not in the app's schema (#30566)", async () => {
       findFirst.mockResolvedValue({ id: 10, appId: "btcpayserver", key: {} });
 
       await call({ ...VALID_KEYS.btcpayserver, extra: "not in schema" });
 
-      expect(persistedKey()).toEqual({ ...VALID_KEYS.btcpayserver, extra: "not in schema" });
+      expect(persistedKey()).toEqual({ ...VALID_KEYS.btcpayserver });
     });
 
-    it("[current] spreads a stored key that is not an object, character by character", async () => {
+    it("stores only the validated key when the stored key is not an object (#30566)", async () => {
       findFirst.mockResolvedValue({ id: 10, appId: "btcpayserver", key: "abc" });
 
       await call({ ...VALID_KEYS.btcpayserver });
 
-      expect(persistedKey()).toEqual({ "0": "a", "1": "b", "2": "c", ...VALID_KEYS.btcpayserver });
+      expect(persistedKey()).toEqual({ ...VALID_KEYS.btcpayserver });
     });
   });
 
   describe("apps without a server-side schema", () => {
-    it("[current] other apps: corrupts a key stored as an encrypted string", async () => {
+    it("other apps: rejects the update and leaves the encrypted key untouched (#30566)", async () => {
       // caldavcalendar, applecalendar, ics-feedcalendar and exchange store symmetricEncrypt(...) strings
       findFirst.mockResolvedValue({ id: 10, appId: "caldavcalendar", key: "enc" });
 
-      await call({ anything: "goes" });
-
-      expect(persistedKey()).toEqual({ "0": "e", "1": "n", "2": "c", anything: "goes" });
+      await expect(call({ anything: "goes" })).rejects.toMatchObject({
+        code: "BAD_REQUEST",
+        message: "Credential keys of this app cannot be updated",
+      });
+      expect(update).not.toHaveBeenCalled();
     });
 
-    it("[current] credential without appId: stores the key without any validation", async () => {
+    it("credential without appId: rejects the update (#30566)", async () => {
       findFirst.mockResolvedValue({ id: 10, appId: null, key: {} });
 
-      await call({ anything: "goes" });
-
-      expect(persistedKey()).toEqual({ anything: "goes" });
+      await expect(call({ anything: "goes" })).rejects.toMatchObject({ code: "BAD_REQUEST" });
+      expect(update).not.toHaveBeenCalled();
     });
   });
 });

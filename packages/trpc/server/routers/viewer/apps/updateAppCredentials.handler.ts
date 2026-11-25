@@ -12,14 +12,22 @@ export type UpdateAppCredentialsOptions = {
   input: TUpdateAppCredentialsInputSchema;
 };
 
+const isJsonObject = (value: unknown): value is Prisma.JsonObject =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
 export const handleCustomValidations = async ({
   input,
   appId,
 }: UpdateAppCredentialsOptions & { appId: string }) => {
-  const { key } = input;
   const loadValidator = getCredentialKeyValidatorLoader(appId);
-  // If no validator is found, return the key as is
-  if (!loadValidator) return key;
+  // Keys are only written after a server-side check: an app without a validator
+  // cannot have its key replaced through this route (#30566).
+  if (!loadValidator) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Credential keys of this app cannot be updated",
+    });
+  }
   try {
     const validator = await loadValidator();
     return await validator({ input });
@@ -52,13 +60,19 @@ export const updateAppCredentialsHandler = async ({ ctx, input }: UpdateAppCrede
 
   const validatedKeys = await handleCustomValidations({ ctx, input, appId: credential.appId || "" });
 
+  // A stored key that is not an object (e.g. an encrypted string) must not be spread
+  let storedKey: Prisma.JsonObject = {};
+  if (isJsonObject(credential.key)) {
+    storedKey = credential.key;
+  }
+
   const updated = await prisma.credential.update({
     where: {
       id: credential.id,
     },
     data: {
       key: {
-        ...(credential.key as Prisma.JsonObject),
+        ...storedKey,
         ...(validatedKeys as Prisma.JsonObject),
       },
     },

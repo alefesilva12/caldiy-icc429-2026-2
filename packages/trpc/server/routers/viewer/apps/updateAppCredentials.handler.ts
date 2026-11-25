@@ -1,9 +1,8 @@
 import { prisma } from "@calcom/prisma";
 import type { Prisma } from "@calcom/prisma/client";
-
 import { TRPCError } from "@trpc/server";
-
 import type { TrpcSessionUser } from "../../../types";
+import { getCredentialKeyValidatorLoader } from "./credentialKeyValidators";
 import type { TUpdateAppCredentialsInputSchema } from "./updateAppCredentials.schema";
 
 export type UpdateAppCredentialsOptions = {
@@ -13,20 +12,16 @@ export type UpdateAppCredentialsOptions = {
   input: TUpdateAppCredentialsInputSchema;
 };
 
-const validators = {
-  paypal: () => import("@calcom/paypal/lib/updateAppCredentials.validator"),
-};
-
 export const handleCustomValidations = async ({
   input,
   appId,
 }: UpdateAppCredentialsOptions & { appId: string }) => {
   const { key } = input;
-  const validatorGetter = validators[appId as keyof typeof validators];
+  const loadValidator = getCredentialKeyValidatorLoader(appId);
   // If no validator is found, return the key as is
-  if (!validatorGetter) return key;
+  if (!loadValidator) return key;
   try {
-    const validator = (await validatorGetter()).default;
+    const validator = await loadValidator();
     return await validator({ input });
   } catch (error) {
     throw new TRPCError({

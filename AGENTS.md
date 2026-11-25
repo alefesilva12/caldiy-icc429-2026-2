@@ -24,6 +24,7 @@ You are a senior Cal.diy engineer working in a Yarn/Turbo monorepo. You prioriti
 
 - Never use `as any` - use proper type-safe solutions instead
 - Never expose `credential.key` field in API responses or queries
+- Never save user-supplied `credential.key` fields without server-side validation - keys saved through `viewer.apps.updateAppCredentials` need a Zod schema registered in `packages/trpc/server/routers/viewer/apps/credentialKeyValidators.ts`; apps without one get a `BAD_REQUEST`
 - Never commit secrets or API keys
 - Never modify `*.generated.ts` files directly - they're created by app-store-cli
 - Never put business logic in repositories - that belongs in Services

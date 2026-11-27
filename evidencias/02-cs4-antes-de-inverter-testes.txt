@@ -1,0 +1,20 @@
+Evidencia CS4 (34a315a): correcao aplicada com os testes do CS1 ainda sem inverter — devem falhar so os 7 [current]
+Repositorio: github.com/alefesilva12/caldiy-icc429-2026-2 (main = importacao de calcom/cal.diy ae027bb, commit 45f1192)
+
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > lookup and ownership > looks the credential up by id AND by the session user id 15ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > lookup and ownership > throws BAD_REQUEST and writes nothing when the credential is not found for this user 1ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > paypal (custom validator) > passes the input to the PayPal validator and merges what it returns into the stored key 1ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > paypal (custom validator) > turns a validator error into BAD_REQUEST with its message and writes nothing 1ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > btcpayserver, alby and hitpay > btcpayserver: merges a valid key into the stored key and returns true 0ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > btcpayserver, alby and hitpay > alby: merges a valid key into the stored key and returns true 6ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > btcpayserver, alby and hitpay > hitpay: merges a valid key into the stored key and returns true 5ms
+ × updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > btcpayserver, alby and hitpay > [current] 'btcpayserver': stores a key its schema rejects ('missing webhookSecret') 4ms
+ × updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > btcpayserver, alby and hitpay > [current] 'alby': stores a key its schema rejects ('account_id is a number') 1ms
+ × updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > btcpayserver, alby and hitpay > [current] 'hitpay': stores a key its schema rejects ('missing isSandbox') 0ms
+ × updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > btcpayserver, alby and hitpay > [current] stores fields that are not in the app's schema 2ms
+ × updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > btcpayserver, alby and hitpay > [current] spreads a stored key that is not an object, character by character 1ms
+ × updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > apps without a server-side schema > [current] other apps: corrupts a key stored as an encrypted string 0ms
+ × updateAppCredentials.handler.test.ts > updateAppCredentials — characterization (behavior at ae027bb) > apps without a server-side schema > [current] credential without appId: stores the key without any validation 0ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 failed (1)
+      Tests  7 failed | 7 passed (14)

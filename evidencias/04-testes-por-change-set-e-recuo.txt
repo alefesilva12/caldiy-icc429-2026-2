@@ -1,0 +1,22 @@
+Evidencia: testes em cada change set e ensaio do recuo da Secao 5 — 24/11/2026 21:44 (America/Manaus)
+Repositorio: github.com/alefesilva12/caldiy-icc429-2026-2 (main = importacao de calcom/cal.diy ae027bb, commit 45f1192)
+Comando de teste em cada passo: TZ=UTC yarn vitest run packages/trpc/server/routers/viewer/apps
+
+1) Testes em cada change set
+   5cc120b test(trpc): add characterization tests for updateAppCredentials -> Tests  18 passed (18)
+   391cbe4 refactor(trpc): extract credential key validator lookup -> Tests  18 passed (18)
+   45d3d7c refactor(trpc): select only needed credential fields -> Tests  18 passed (18)
+   34a315a fix(trpc): validate credential keys per app on the server -> Tests  21 passed (21)
+   31ab364 docs: require server-side schemas for credential keys -> Tests  21 passed (21)
+
+2) Simulacao da main com squash (branches temporarias sim-main e sim-pr2, descartadas depois)
+   PR 1 entra por squash -> Tests  18 passed (18)
+   PR 2 atualizado com merge da main: 3 arquivos em conflito (credentialKeyValidators.ts updateAppCredentials.handler.test.ts updateAppCredentials.handler.ts )
+   conflitos resolvidos mantendo a versao do PR 2; arvore igual a do PR 2? SIM -> Tests  21 passed (21)
+   PR 2 entra por squash, sem conflito -> Tests  21 passed (21); diff com o PR 2: 0 linhas
+
+3) Recuo: git revert do commit do PR 2 na main
+   -> Tests  18 passed (18); diff com o estado do PR 1: 0 linhas (0 = voltou exatamente ao PR 1)
+
+4) Problema na refatoracao: reverte tambem o PR 1
+   -> Tests  4 passed (4); diff com a base: 0 linhas (0 = voltou ao codigo original)

@@ -1,0 +1,30 @@
+Evidencia CS4 (34a315a): todos os testes do diretorio depois da correcao
+Repositorio: github.com/alefesilva12/caldiy-icc429-2026-2 (main = importacao de calcom/cal.diy ae027bb, commit 45f1192)
+Comando: TZ=UTC yarn vitest run packages/trpc/server/routers/viewer/apps --reporter=verbose
+
+ RUN  v4.1.8 cal.diy
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > lookup and ownership > looks the credential up by id AND by the session user id 12ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > lookup and ownership > throws BAD_REQUEST and writes nothing when the credential is not found for this user 1ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > paypal (custom validator) > passes the input to the PayPal validator and merges what it returns into the stored key 1ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > paypal (custom validator) > turns a validator error into BAD_REQUEST with its message and writes nothing 1ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > btcpayserver, alby and hitpay > btcpayserver: merges a valid key into the stored key and returns true 0ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > btcpayserver, alby and hitpay > alby: merges a valid key into the stored key and returns true 7ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > btcpayserver, alby and hitpay > hitpay: merges a valid key into the stored key and returns true 5ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > btcpayserver, alby and hitpay > 'btcpayserver': rejects a key its schema rejects ('missing webhookSecret') (#30566) 1ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > btcpayserver, alby and hitpay > 'alby': rejects a key its schema rejects ('account_id is a number') (#30566) 0ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > btcpayserver, alby and hitpay > 'hitpay': rejects a key its schema rejects ('missing isSandbox') (#30566) 0ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > btcpayserver, alby and hitpay > drops fields that are not in the app's schema (#30566) 0ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > btcpayserver, alby and hitpay > stores only the validated key when the stored key is not an object (#30566) 0ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > apps without a server-side schema > other apps: rejects the update and leaves the encrypted key untouched (#30566) 0ms
+ ✓ updateAppCredentials.handler.test.ts > updateAppCredentials > apps without a server-side schema > credential without appId: rejects the update (#30566) 0ms
+ ✓ credentialKeyValidators.test.ts > credentialKeyValidators > registers a server-side validator for every app whose Setup screen updates credential keys 3ms
+ ✓ credentialKeyValidators.test.ts > credentialKeyValidators > has no validator for apps that store their key some other way 0ms
+ ✓ credentialKeyValidators.test.ts > credentialKeyValidators > validates with the app's own schema: drops undeclared fields, rejects missing ones 11ms
+ ✓ appById.handler.test.ts > appByIdHandler > should not expose key field for globally installed apps 3ms
+ ✓ appById.handler.test.ts > appByIdHandler > should throw BAD_REQUEST when app is not found 1ms
+ ✓ appById.handler.test.ts > appByIdHandler > should preserve all non-sensitive properties 1ms
+ ✓ appById.handler.test.ts > appByIdHandler > should correctly set isInstalled based on credentials length 0ms
+ Test Files  3 passed (3)
+      Tests  21 passed (21)
+   Start at  01:43:47
+   Duration  1.19s (transform 130ms, setup 168ms, import 95ms, tests 51ms, environment 610ms)
